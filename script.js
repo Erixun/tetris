@@ -118,16 +118,18 @@ function fallStep() {
                 pixel.classList.add("landed");
                 pixel.classList.remove("block");
             });
+            checkLevels();
+            if( indices.length > 0) { clearLevels(); indices = []; };
             createBlock();
         } else { 
             block.forEach( input => input.classList.remove("block") );
             newBlock.forEach( input => input.classList.add("block") );
         }
 
+        // is the new block at bottom level? if so, make it landed
         let yCoords;
-        yCoords = newBlockCoords.map( input => {
-            return input.split(",")[1];
-        })
+        yCoords = newBlockCoords.map( input => { return input.split(",")[1]; })
+
         if( !yCoords.includes("1") ) {
             fallStep();
         } else {
@@ -144,6 +146,10 @@ async function landBlock() {
         pixel.classList.add("landed");
         pixel.classList.remove("block");
     });
+    checkLevels();
+    if( indices.length > 0) { clearLevels() };
+    indices = [];
+    await sleep(100);
     createBlock();
     fallStep();
 }
@@ -167,3 +173,29 @@ window.addEventListener("keyup", (e) => {
     }
 })
 
+const levels = [];
+for( let i = 1; i<31; i++) {
+    levels.push( Array.from( document.querySelectorAll("[level=\'"+ i +"\']") ) );
+}
+
+
+let levelsFilled;
+let indices = [];
+function checkLevels() {
+    levelsFilled = levels.map( level => !level.map( pixel => pixel.classList.contains("landed") ).includes(false) );
+    for(let i=0; i<30; i++) {
+        if(levelsFilled[i] == true) {
+            indices.push(i);
+        }
+    }
+    return indices;
+}
+
+
+function clearLevels() {
+
+    for( let index of indices ) {
+        levels[index].forEach( input => input.classList.remove("landed") );
+    }
+ 
+}
