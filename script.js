@@ -55,13 +55,12 @@ function moveHorizontally() {
     for( let i = 0; i<4; i++) {
         blockCoords.push( block[i].getAttribute("xy") );
     }
-
-    
+    // create new block-coords
     newBlockCoords = blockCoords.map( input => {
         let newX = +input.split(",")[0] + xChange;
         return newX + "," + input.split(",")[1];
         })
-    console.log(newBlockCoords)
+    //console.log(newBlockCoords)
 
     let xCoords;
     xCoords = newBlockCoords.map( input => {
@@ -112,42 +111,59 @@ function fallStep() {
         // fill new block-pixels?
         newBlock = Array.from( document.querySelectorAll("[xy=\'" + newBlockCoords[0] + "\'],[xy=\'"+newBlockCoords[1]+"\'],[xy=\'"+newBlockCoords[2]+"\'],[xy=\'"+newBlockCoords[3]+"\']") );
         
-        // does any pixel of newBlock contain class "landed"? if so, stop
+        // does any pixel of newBlock contain class "landed"? if so, stop falling
         if( newBlock.map( input => input.classList.contains("landed") ).includes(true) ) {
-            block.forEach( pixel => {
-                pixel.classList.add("landed");
-                pixel.classList.remove("block");
-            });
-            checkLevels();
-            if( indices.length > 0) { clearLevels(); indices = []; };
-            createBlock();
+            landBlockTop();
+            return;
         } else { 
             block.forEach( input => input.classList.remove("block") );
             newBlock.forEach( input => input.classList.add("block") );
         }
 
-        // is the new block at bottom level? if so, make it landed
+        // get y-coordinates of the new block
         let yCoords;
         yCoords = newBlockCoords.map( input => { return input.split(",")[1]; })
-
+        // is the new block not at bottom level? if so, keep falling
         if( !yCoords.includes("1") ) {
             fallStep();
-        } else {
-            landBlock();
+        } else { // make it landed
+            landBlockBottom();
         };
     }, speed)
 }
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-async function landBlock() {
-    await sleep(250);
+async function landBlockTop() {
+    await sleep(200);
+    block.forEach( pixel => {
+        pixel.classList.add("landed");
+        pixel.classList.remove("block");
+    });
+
+    checkLevels(); // any level filled? if so, clear it, then drop the blocks above
+    if( indices.length > 0) { 
+        clearLevels(); 
+        await sleep(120);
+        dropLevels(); 
+    };
+    indices = [];
+    await sleep(100);
+    createBlock();
+    fallStep();
+}
+async function landBlockBottom() {
+    await sleep(200);
     newBlock.forEach( pixel => {
         pixel.classList.add("landed");
         pixel.classList.remove("block");
     });
     checkLevels();
-    if( indices.length > 0) { clearLevels() };
+    if( indices.length > 0) { 
+        clearLevels(); 
+        await sleep(120);
+        dropLevels(); 
+    };
     indices = [];
     await sleep(100);
     createBlock();
@@ -192,10 +208,67 @@ function checkLevels() {
 }
 
 
-function clearLevels() {
+async function clearLevels() {
 
     for( let index of indices ) {
         levels[index].forEach( input => input.classList.remove("landed") );
+        levels[index].forEach( input => input.classList.add("cleared") );
     }
- 
+    await sleep(100);
+    for( let index of indices ) {
+        levels[index].forEach( input => input.classList.remove("cleared") );
+    }
+
+    levelsCleared = indices
 }
+let levelsCleared;
+let airBlocks;
+let nrOfBlocks;
+let airBlockCoords;
+let droppedBlockCoords;
+let dropBlocks;
+let landed;
+let drop;
+function dropLevels() {
+    
+    drop = levelsCleared.length;
+    landed = Array.from( document.querySelectorAll("div.landed") );
+
+    for( let div of landed ) {
+        if( +div.getAttribute("level") > levelsCleared[drop-1] ) {
+            div.classList.add("airblock");
+        }
+    }
+    airBlocks = Array.from( document.querySelectorAll("div.airblock") );
+
+    // get current airblock-coords
+    nrOfBlocks = airBlocks.length;
+    airBlockCoords = [];
+    for( let i = 0; i < nrOfBlocks; i++) {
+        airBlockCoords.push( airBlocks[i].getAttribute("xy") );
+    }
+    // get coords to drop to
+    droppedBlockCoords = airBlockCoords.map( input => {
+        let newY = +input.split(",")[1] - drop;
+        return input.split(",")[0] + "," + newY;
+        })
+
+    let coordSet; // coords as a string to select with
+    for( let coord of droppedBlockCoords) {
+        coordSet += ",[xy=\'" + coord + "\']";
+    }
+
+    // selected pixels to drop to
+    dropBlocks = Array.from( document.querySelectorAll(coordSet) );
+    
+    airBlocks.forEach( pixel => {
+
+        pixel.classList.remove("landed");
+        pixel.classList.remove("airblock")
+    });
+    dropBlocks.forEach( pixel => {
+        pixel.classList.add("landed");
+
+    });
+}
+

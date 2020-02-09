@@ -35,3 +35,10 @@ div.landed {
     width: 16px !important;
     height: 16px !important;
 }
+div.cleared {
+    transition: 0.1s;
+    background-color: greenyellow;
+    border: 1px solid white;
+    width: 16px !important;
+    height: 16px !important;
+}
