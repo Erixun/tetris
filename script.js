@@ -138,11 +138,12 @@ function fallStep() {
         };
     }, speed)
 }
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 async function landBlockTop() {
-    await sleep(200);
+    await sleep(300);
     block.forEach( pixel => {
         pixel.classList.add("landed");
         pixel.classList.remove("block");
@@ -160,7 +161,7 @@ async function landBlockTop() {
     fallStep();
 }
 async function landBlockBottom() {
-    await sleep(200);
+    await sleep(300);
     newBlock.forEach( pixel => {
         pixel.classList.add("landed");
         pixel.classList.remove("block");
@@ -526,16 +527,26 @@ function rotate() {
 
     rotatedBlock = Array.from( document.querySelectorAll("[xy=\'" + rotatedBlockCoords[0] + "\'],[xy=\'"+rotatedBlockCoords[1]+"\'],[xy=\'"+rotatedBlockCoords[2]+"\'],[xy=\'"+rotatedBlockCoords[3]+"\']") );
     let xCoords = rotatedBlockCoords.map( coord => coord.split(",")[0] );
-    if( xCoords.includes("0") || xCoords.includes("21") ) {
+    let yCoords = blockCoords.map( coord => coord.split(",")[1] );
+    classLanded = rotatedBlock.reduce( (total, div) => { 
+        return (total || div.classList.contains("landed") ) ;
+    }, false)
+    if( xCoords.includes("0") || xCoords.includes("21") ) { 
         return; // unables rotation into walls
+    } else if( classLanded ) { // does to rotated block to be contain any landed pixel? if so, return, don't rotate
+        console.log( classLanded )
+        return; // unables rotation into other blocks
+    } else if( yCoords.includes("1") ) {
+        return;
     }
-
+    newBlockCoords = rotatedBlockCoords;
+    console.log( classLanded )
     block.forEach( pixel => pixel.classList.remove("block") );
     rotatedBlock.forEach( pixel => pixel.classList.add("block") );
 
 
 }
-
+let classLanded;
 window.addEventListener("keydown", (e) => {
     if( e.key === " ") {
         // rotate current block...
