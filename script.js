@@ -25,22 +25,29 @@ for(let i = 30; i > 0; i--) {
 // shape-codes
 const shapeCodes = [
     [1,3,5,7],  //straight
-    [1,3,4,5],  //left club
+    [1,3,4,5]//,  //left club
     [0,2,4,5],  //right club
     [1,2,3,5],  //protrusion
     [1,2,3,4],  //right Z
     [0,2,4,5],  //left Z
     [0,1,2,3]   //cube
 ]
+const shapes = ["straight","left club","right club","protrusion","right Z","left Z","cube"]
 
 // select start-area
 const startArea = Array.from( document.querySelectorAll("div.start") )
 const topline = Array.from( document.querySelectorAll(".topline") )
 // create shape
+let ix;
+let currentShape;
+let rotation;
 function createBlock() {
-    for( let num of shapeCodes[ Math.trunc(Math.random()*10 % 7) ] ) { //choose random shape-code
+    rotation = 0;
+    ix = Math.trunc(Math.random()*10 % 7); // random index
+    for( let num of shapeCodes[ ix ] ) { //choose random shape-code
         startArea[num].classList.add("block");
     }
+    currentShape = shapes[ix];
 }
 
 
@@ -60,7 +67,6 @@ function moveHorizontally() {
         let newX = +input.split(",")[0] + xChange;
         return newX + "," + input.split(",")[1];
         })
-    //console.log(newBlockCoords)
 
     let xCoords;
     xCoords = newBlockCoords.map( input => {
@@ -272,3 +278,264 @@ function dropLevels() {
     });
 }
 
+function rotate() {
+    // get current block
+    block = Array.from( document.querySelectorAll("div.block") );
+
+    // get current block-coords. or the whole "sphere" ?
+    blockCoords = [];
+    for( let i = 0; i<4; i++) {
+        blockCoords.push( block[i].getAttribute("xy") );
+    }
+
+    // create rotated block-coords
+    let newX;
+    let newY;
+    rotatedBlockCoords = []; // get current shape
+    if( currentShape == "straight" ) {
+        for( let i = 0; i < 4; i++ ) {
+            newX = +blockCoords[i].split(",")[0] - (i-1);
+            newY = +blockCoords[i].split(",")[1] + (i-1);
+            rotatedBlockCoords.push( newX + "," + newY );
+        }
+    } else if( currentShape == "left club" ) {
+
+        if( rotation == 1) {
+            newX = +blockCoords[0].split(",")[0] + 1;
+            newY = +blockCoords[0].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0];
+            newY = +blockCoords[1].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0];
+            newY = +blockCoords[2].split(",")[1] + 2;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0] - 1;
+            newY = +blockCoords[3].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+        } else if(rotation == 2) {
+            newX = +blockCoords[0].split(",")[0] + 2;
+            newY = +blockCoords[0].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0] + 1;
+            newY = +blockCoords[1].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0];
+            newY = +blockCoords[2].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0] - 1;
+            newY = +blockCoords[3].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+        } else if(rotation == 3) {
+            newX = +blockCoords[0].split(",")[0] + 1;
+            newY = +blockCoords[0].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0];
+            newY = +blockCoords[1].split(",")[1] - 2;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0];
+            newY = +blockCoords[2].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0] - 1;
+            newY = +blockCoords[3].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+        } else if( rotation == 0 ) {
+            newX = +blockCoords[0].split(",")[0] + 1;
+            newY = +blockCoords[0].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0];
+            newY = +blockCoords[1].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0] - 1;
+            newY = +blockCoords[2].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0] - 2;
+            newY = +blockCoords[3].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+        }
+    } else if( currentShape == "right club" ) {
+        if( rotation == 1) {
+            newX = +blockCoords[0].split(",")[0] + 1;
+            newY = +blockCoords[0].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0];
+            newY = +blockCoords[1].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0] - 1;
+            newY = +blockCoords[2].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0] - 2;
+            newY = +blockCoords[3].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+        } else if(rotation == 2) {
+            newX = +blockCoords[0].split(",")[0] + 1;
+            newY = +blockCoords[0].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0];
+            newY = +blockCoords[1].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0] - 1;
+            newY = +blockCoords[2].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0];
+            newY = +blockCoords[3].split(",")[1] + 2;
+            rotatedBlockCoords.push( newX + "," + newY );
+        } else if(rotation == 3) {
+            newX = +blockCoords[0].split(",")[0] + 2;
+            newY = +blockCoords[0].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0] + 1;
+            newY = +blockCoords[1].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0];
+            newY = +blockCoords[2].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0] - 1;
+            newY = +blockCoords[3].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+        } else if( rotation == 0 ) {
+            newX = +blockCoords[0].split(",")[0];
+            newY = +blockCoords[0].split(",")[1] - 2;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0] + 1;
+            newY = +blockCoords[1].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0];
+            newY = +blockCoords[2].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0] - 1;
+            newY = +blockCoords[3].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+        }
+    } else if( currentShape == "protrusion" ) {
+        if( rotation == 1) {
+            newX = +blockCoords[0].split(",")[0];
+            newY = +blockCoords[0].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0];
+            newY = +blockCoords[1].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0];
+            newY = +blockCoords[2].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0] + 1;
+            newY = +blockCoords[3].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+        } else if(rotation == 2) {
+            newX = +blockCoords[0].split(",")[0];
+            newY = +blockCoords[0].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0] + 1;
+            newY = +blockCoords[1].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0];
+            newY = +blockCoords[2].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0];
+            newY = +blockCoords[3].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+        } else if(rotation == 3) {
+            newX = +blockCoords[0].split(",")[0] - 1;
+            newY = +blockCoords[0].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0];
+            newY = +blockCoords[1].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0];
+            newY = +blockCoords[2].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0];
+            newY = +blockCoords[3].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+        } else if( rotation == 0 ) {
+            newX = +blockCoords[0].split(",")[0];
+            newY = +blockCoords[0].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0];
+            newY = +blockCoords[1].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0] - 1;
+            newY = +blockCoords[2].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0];
+            newY = +blockCoords[3].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+        }
+    } else if( currentShape == "right Z" ) {
+        if( rotation == 1 || rotation == 3) {
+            newX = +blockCoords[0].split(",")[0] + 1;
+            newY = +blockCoords[0].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0] + 1;
+            newY = +blockCoords[1].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0];
+            newY = +blockCoords[2].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0];
+            newY = +blockCoords[3].split(",")[1] + 2;
+            rotatedBlockCoords.push( newX + "," + newY );
+        } else {
+            newX = +blockCoords[0].split(",")[0];
+            newY = +blockCoords[0].split(",")[1] - 2;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0] - 1;
+            newY = +blockCoords[1].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0];
+            newY = +blockCoords[2].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0] - 1;
+            newY = +blockCoords[3].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+        }
+    } else if( currentShape == "left Z" ) {
+        if( rotation == 1 || rotation == 3) {
+            newX = +blockCoords[0].split(",")[0] + 1;
+            newY = +blockCoords[0].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0];
+            newY = +blockCoords[1].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0] - 1;
+            newY = +blockCoords[2].split(",")[1] - 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0] - 2;
+            newY = +blockCoords[3].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+        } else {
+            newX = +blockCoords[0].split(",")[0];
+            newY = +blockCoords[0].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[1].split(",")[0] - 1;
+            newY = +blockCoords[1].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[2].split(",")[0] + 2;
+            newY = +blockCoords[2].split(",")[1];
+            rotatedBlockCoords.push( newX + "," + newY );
+            newX = +blockCoords[3].split(",")[0] + 1;
+            newY = +blockCoords[3].split(",")[1] + 1;
+            rotatedBlockCoords.push( newX + "," + newY );
+        }
+    } else if( currentShape == "cube" ) {
+        return;
+    }
+
+    console.log(rotatedBlockCoords)
+
+    rotatedBlock = Array.from( document.querySelectorAll("[xy=\'" + rotatedBlockCoords[0] + "\'],[xy=\'"+rotatedBlockCoords[1]+"\'],[xy=\'"+rotatedBlockCoords[2]+"\'],[xy=\'"+rotatedBlockCoords[3]+"\']") );
+    
+    block.forEach( pixel => pixel.classList.remove("block") );
+    rotatedBlock.forEach( pixel => pixel.classList.add("block") );
+
+
+}
+
+window.addEventListener("keydown", (e) => {
+    if( e.key === " ") {
+        // rotate current block...
+        rotation = (rotation + 1) % 4;
+        rotate();
+    }
+    console.log(rotation);
+})
