@@ -122,10 +122,10 @@ function fallStep() {
         yCoords = newBlockCoords.map( input => { return input.split(",")[1]; })
         // does any pixel of newBlock contain class "landed"? if so, stop falling
         if( newBlock.map( input => input.classList.contains("landed") ).includes(true) ) {
-            landBlockTop();
+            landBlock();
             return;
         } else if( yCoords.includes("0") ) {
-            landBlockTop();
+            landBlock();
         } else { 
             block.forEach( input => input.classList.remove("block") );
             newBlock.forEach( input => input.classList.add("block") );
@@ -137,7 +137,7 @@ function fallStep() {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-async function landBlockTop() {
+async function landBlock() {
     await sleep(300);
     newBlock = block;
     newBlock.forEach( pixel => {
@@ -146,23 +146,6 @@ async function landBlockTop() {
     });
 
     checkLevels(); // any level filled? if so, clear it, then drop the blocks above
-    if( indices.length > 0) { 
-        clearLevels(); 
-        await sleep(120);
-        dropLevels(); 
-    };
-    indices = [];
-    await sleep(100);
-    createBlock();
-    fallStep();
-}
-async function landBlockBottom() {
-    await sleep(300);
-    block.forEach( pixel => {
-        pixel.classList.add("landed");
-        pixel.classList.remove("block");
-    });
-    checkLevels();
     if( indices.length > 0) { 
         clearLevels(); 
         await sleep(120);
