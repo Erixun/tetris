@@ -76,13 +76,14 @@ function moveHorizontally() {
     if( xCoords.includes("0") || xCoords.includes("21") ) return;
     
     // fill new block-pixels
-    temp = Array.from( document.querySelectorAll("[xy=\'" + newBlockCoords[0] + "\'],[xy=\'"+newBlockCoords[1]+"\'],[xy=\'"+newBlockCoords[2]+"\'],[xy=\'"+newBlockCoords[3]+"\']") );
-    if( temp.map( input => input.classList.contains("landed") ).includes(true) ) {
+    movedBlock = Array.from( document.querySelectorAll("[xy=\'" + newBlockCoords[0] + "\'],[xy=\'"+newBlockCoords[1]+"\'],[xy=\'"+newBlockCoords[2]+"\'],[xy=\'"+newBlockCoords[3]+"\']") );
+    if( movedBlock.map( input => input.classList.contains("landed") ).includes(true) ) {
         return; 
     } else {
-        newBlock = temp;
+        //newBlock = movedBlock;
         block.forEach( input => input.classList.remove("block") );
-        newBlock.forEach( input => input.classList.add("block") );
+        movedBlock.forEach( input => input.classList.add("block") );
+        block = movedBlock;
     }
 }
 
@@ -117,25 +118,19 @@ function fallStep() {
 
         // fill new block-pixels?
         newBlock = Array.from( document.querySelectorAll("[xy=\'" + newBlockCoords[0] + "\'],[xy=\'"+newBlockCoords[1]+"\'],[xy=\'"+newBlockCoords[2]+"\'],[xy=\'"+newBlockCoords[3]+"\']") );
-        
+        let yCoords;
+        yCoords = newBlockCoords.map( input => { return input.split(",")[1]; })
         // does any pixel of newBlock contain class "landed"? if so, stop falling
         if( newBlock.map( input => input.classList.contains("landed") ).includes(true) ) {
             landBlockTop();
             return;
+        } else if( yCoords.includes("0") ) {
+            landBlockTop();
         } else { 
             block.forEach( input => input.classList.remove("block") );
             newBlock.forEach( input => input.classList.add("block") );
-        }
-
-        // get y-coordinates of the new block
-        let yCoords;
-        yCoords = newBlockCoords.map( input => { return input.split(",")[1]; })
-        // is the new block not at bottom level? if so, keep falling
-        if( !yCoords.includes("1") ) {
             fallStep();
-        } else { // make it landed
-            landBlockBottom();
-        };
+        }
     }, speed)
 }
 
@@ -144,7 +139,8 @@ function sleep(ms) {
   }
 async function landBlockTop() {
     await sleep(300);
-    block.forEach( pixel => {
+    newBlock = block;
+    newBlock.forEach( pixel => {
         pixel.classList.add("landed");
         pixel.classList.remove("block");
     });
@@ -162,7 +158,7 @@ async function landBlockTop() {
 }
 async function landBlockBottom() {
     await sleep(300);
-    newBlock.forEach( pixel => {
+    block.forEach( pixel => {
         pixel.classList.add("landed");
         pixel.classList.remove("block");
     });
