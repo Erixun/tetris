@@ -174,24 +174,7 @@ async function landBlockBottom() {
     fallStep();
 }
 
-let xChange;
-window.addEventListener("keydown", (e) => {
-    console.log(e.key);
-    if( e.key === "a" || e.key === "ArrowLeft" ) {
-        xChange = -1;
-        moveHorizontally();
-    } else if( e.key === "d" || e.key === "ArrowRight" ) {
-        xChange = 1;
-        moveHorizontally();
-    } else if( e.key === "s" || e.key === "ArrowDown") {
-        speed = 10;
-    }
-})
-window.addEventListener("keyup", (e) => {
-    if( e.key === "s" || e.key === "ArrowDown") {
-        speed = 200;
-    }
-})
+
 
 const levels = [];
 for( let i = 1; i<31; i++) {
@@ -275,7 +258,7 @@ function dropLevels() {
 
     });
 }
-
+let classLanded;
 function rotate() {
     // get current block
     block = Array.from( document.querySelectorAll("div.block") );
@@ -542,12 +525,34 @@ function rotate() {
 
 
 }
-let classLanded;
+
 window.addEventListener("keydown", (e) => {
-    if( e.key === " ") {
+    if( e.key === "w") {
         // rotate current block...
         rotation = (rotation + 1) % 4;
         rotate();
     }
     console.log(rotation);
+})
+let xChange;
+window.addEventListener("keydown", (e) => {
+    console.log(e.key);
+    if( e.key === "a" || e.key === "ArrowLeft" ) {
+        xChange = -1;
+        moveHorizontally();
+    } else if( e.key === "d" || e.key === "ArrowRight" ) {
+        xChange = 1;
+        moveHorizontally();
+    } else if( e.key === "s" || e.key === "ArrowDown") {
+        speed = 20;
+    } else if ( e.key === " ") {
+        speed = 4;
+    };
+})
+window.addEventListener("keyup", (e) => {
+    if( e.key === "s" || e.key === "ArrowDown") {
+        speed = 200;
+    } else if( e.key === " ") {
+        speed = 200;
+    }
 })
