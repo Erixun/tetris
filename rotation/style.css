@@ -1,0 +1,44 @@
+
+
+
+div#header {
+    height:40px;
+}
+
+div#container {
+    width:min-content;
+    height:auto;
+    border:1px solid black;
+    display:grid;
+    grid-template-columns: repeat(20, 1fr);
+}
+
+div#topcover {
+    width: 362px;
+    height: 72px;
+    position: absolute;
+    background-color:white;
+    border-bottom: 1px solid black;
+    right: 459.4px;
+    top: 48px;
+}
+
+div.block {
+    background-color:grey;
+    border: 1px solid red;
+    width: 16px !important;
+    height: 16px !important;
+}
+div.landed {
+    background-color:grey;
+    border: 1px solid red;
+    width: 16px !important;
+    height: 16px !important;
+}
+div.cleared {
+    transition: 0.1s;
+    background-color: greenyellow;
+    border: 1px solid white;
+    width: 16px !important;
+    height: 16px !important;
+}

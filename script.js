@@ -6,9 +6,10 @@ const area = document.querySelector("div#container");
 for(let i = 30; i > 0; i--) {
     for( let j = 1; j < 21; j++) {
         div = document.createElement("div");
-        div.setAttribute("xy", j+","+i);
         div.setAttribute("level", +i);
-        //div.setAttribute("x", j);
+        div.setAttribute("xy", j+","+i);
+        div.setAttribute("x", +j);
+        div.setAttribute("y", +i);
         div.style.width = "18px";
         div.style.height = "18px";
         // set creation-site-div's
@@ -25,11 +26,11 @@ for(let i = 30; i > 0; i--) {
 // shape-codes
 const shapeCodes = [
     [1,3,5,7],  //straight
-    [1,3,4,5]//,  //left club
+    [1,3,4,5],  //left club
     [0,2,4,5],  //right club
     [1,2,3,5],  //protrusion
     [1,2,3,4],  //right Z
-    [0,2,4,5],  //left Z
+    [0,2,3,5],  //left Z
     [0,1,2,3]   //cube
 ]
 const shapes = ["straight","left club","right club","protrusion","right Z","left Z","cube"]
@@ -524,7 +525,11 @@ function rotate() {
     console.log(rotatedBlockCoords)
 
     rotatedBlock = Array.from( document.querySelectorAll("[xy=\'" + rotatedBlockCoords[0] + "\'],[xy=\'"+rotatedBlockCoords[1]+"\'],[xy=\'"+rotatedBlockCoords[2]+"\'],[xy=\'"+rotatedBlockCoords[3]+"\']") );
-    
+    let xCoords = rotatedBlockCoords.map( coord => coord.split(",")[0] );
+    if( xCoords.includes("0") || xCoords.includes("21") ) {
+        return; // unables rotation into walls
+    }
+
     block.forEach( pixel => pixel.classList.remove("block") );
     rotatedBlock.forEach( pixel => pixel.classList.add("block") );
 
