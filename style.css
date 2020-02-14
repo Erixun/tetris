@@ -1,5 +1,10 @@
 
 
+body {
+    background-image: url(tetris-paradise-bg.jpg);
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
 
 div#header {
     height:40px;
@@ -8,30 +13,64 @@ div#header {
 div#container {
     width:min-content;
     height:auto;
+    background-color: #0e6ced;
     border:1px solid black;
     display:grid;
     grid-template-columns: repeat(20, 1fr);
 }
 
 div#topcover {
-    width: 362px;
+    width: 360px;
     height: 72px;
     position: absolute;
-    background-color:white;
+    background-color: #e1edff;
     border-bottom: 1px solid black;
-    right: 459.4px;
+    /* right: 459.4px; */
     top: 48px;
+}
+h1 {
+    margin-top: 8px;
+    margin-bottom: 0px;
 }
 
 div.block {
     background-color:grey;
-    border: 1px solid red;
+    border: 1px solid;
     width: 16px !important;
     height: 16px !important;
 }
+div.straight {
+    background-color: orange;
+    border-color: lightblue blue blue lightblue;
+}
+div.left-club {
+    background-color: lightpink;
+    border-color: lightblue blue blue lightblue;
+}
+div.right-club {
+    background-color: pink;
+    border-color: lightblue blue blue lightblue;
+}
+div.right-Z {
+    background-color: lightgreen;
+    border-color: lightblue blue blue lightblue;
+}
+div.left-Z {
+    background-color: lightseagreen;
+    border-color: lightblue blue blue lightblue;
+}
+div.protrusion {
+    background-color: lightcoral;
+    border-color: lightblue blue blue lightblue;
+}
+div.cube {
+    background-color: lightblue;
+    border-color: lightblue blue blue lightblue;
+}
 div.landed {
-    background-color:grey;
-    border: 1px solid red;
+    /* background-color:grey; */
+    border: 1px solid;
+    border-color: lightblue blue blue lightblue;
     width: 16px !important;
     height: 16px !important;
 }

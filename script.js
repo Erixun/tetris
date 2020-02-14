@@ -27,15 +27,15 @@ for(let i = 30; i > 0; i--) {
 const shapeCodes = [
     [1,3,5,7],  //straight
     [1,3,4,5],  //left club
-    [0,2,4,5],  //right club
+    [0,2,4,5],  //right-club
     [1,2,3,5],  //protrusion
-    [1,2,3,4],  //right Z
-    [0,2,3,5],  //left Z
+    [1,2,3,4],  //right-Z
+    [0,2,3,5],  //left-Z
     [0,1,2,3]   //cube
 ]
-const shapes = ["straight","left club","right club","protrusion","right Z","left Z","cube"]
+const shapes = ["straight","left-club","right-club","protrusion","right-Z","left-Z","cube"]
 
-// select start-area
+// select start-area & topline
 const startArea = Array.from( document.querySelectorAll("div.start") )
 const topline = Array.from( document.querySelectorAll(".topline") )
 // create shape
@@ -46,7 +46,8 @@ function createBlock() {
     rotation = 0;
     ix = Math.trunc(Math.random()*10 % 7); // random index
     for( let num of shapeCodes[ ix ] ) { //choose random shape-code
-        startArea[num].classList.add("block");
+        startArea[num].classList.add("block", shapes[ ix ]);
+     //   startArea[num].classList.add(  );
     }
     currentShape = shapes[ix];
 }
@@ -81,8 +82,8 @@ function moveHorizontally() {
         return; 
     } else {
         //newBlock = movedBlock;
-        block.forEach( input => input.classList.remove("block") );
-        movedBlock.forEach( input => input.classList.add("block") );
+        block.forEach( input => input.classList.remove("block", currentShape ) );
+        movedBlock.forEach( input => input.classList.add("block", currentShape) );
         block = movedBlock;
     }
 }
@@ -127,8 +128,8 @@ function fallStep() {
         } else if( yCoords.includes("0") ) {
             landBlock();
         } else { 
-            block.forEach( input => input.classList.remove("block") );
-            newBlock.forEach( input => input.classList.add("block") );
+            block.forEach( input => input.classList.remove("block", currentShape) );
+            newBlock.forEach( input => input.classList.add("block", currentShape ) );
             fallStep();
         }
     }, speed)
@@ -141,8 +142,8 @@ async function landBlock() {
     await sleep(300);
     newBlock = block;
     newBlock.forEach( pixel => {
-        pixel.classList.add("landed");
-        pixel.classList.remove("block");
+        pixel.classList.remove("block", currentShape);
+        pixel.classList.add("landed", currentShape);
     });
 
     checkLevels(); // any level filled? if so, clear it, then drop the blocks above
@@ -181,12 +182,12 @@ function checkLevels() {
 async function clearLevels() {
 
     for( let index of indices ) {
-        levels[index].forEach( input => input.classList.remove("landed") );
+        levels[index].forEach( input => input.classList.remove("landed", currentShape) );
         levels[index].forEach( input => input.classList.add("cleared") );
     }
     await sleep(100);
     for( let index of indices ) {
-        levels[index].forEach( input => input.classList.remove("cleared") );
+        levels[index].forEach( input => input.removeAttribute("class") );//.classList.remove("cleared") );
     }
 
     levelsCleared = indices
@@ -231,13 +232,24 @@ function dropLevels() {
     // selected pixels to drop to
     dropBlocks = Array.from( document.querySelectorAll(coordSet) );
     
-    airBlocks.forEach( pixel => {
 
-        pixel.classList.remove("landed");
-        pixel.classList.remove("airblock")
+    airBlocks.forEach( pixel => {
+        pixel.classList.remove("landed", "airblock");
+        //pixel.classList.remove("airblock")
     });
+    let shapesList = airBlocks.map( pixel => pixel.getAttribute("class") );
+    console.log(shapesList); 
+    airBlocks.forEach( pixel => {
+        pixel.removeAttribute("class");
+        //pixel.classList.remove("airblock")
+    });
+    // for each dropblock, add corresponding airblock shape 
+    let shapesListLength = shapesList.length;
+    for( let i = 0; i < shapesListLength; i++ ){
+        dropBlocks[i].classList.add( shapesList[i] );
+    }
     dropBlocks.forEach( pixel => {
-        pixel.classList.add("landed");
+        pixel.classList.add("landed")//, currentShape);
 
     });
 }
@@ -262,7 +274,7 @@ function rotate() {
             newY = +blockCoords[i].split(",")[1] + (i-1);
             rotatedBlockCoords.push( newX + "," + newY );
         }
-    } else if( currentShape == "left club" ) {
+    } else if( currentShape == "left-club" ) {
 
         if( rotation == 1) {
             newX = +blockCoords[0].split(",")[0] + 1;
@@ -317,7 +329,7 @@ function rotate() {
             newY = +blockCoords[3].split(",")[1];
             rotatedBlockCoords.push( newX + "," + newY );
         }
-    } else if( currentShape == "right club" ) {
+    } else if( currentShape == "right-club" ) {
         if( rotation == 1) {
             newX = +blockCoords[0].split(",")[0] + 1;
             newY = +blockCoords[0].split(",")[1] - 1;
@@ -425,7 +437,7 @@ function rotate() {
             newY = +blockCoords[3].split(",")[1];
             rotatedBlockCoords.push( newX + "," + newY );
         }
-    } else if( currentShape == "right Z" ) {
+    } else if( currentShape == "right-Z" ) {
         if( rotation == 1 || rotation == 3) {
             newX = +blockCoords[0].split(",")[0] + 1;
             newY = +blockCoords[0].split(",")[1] - 1;
@@ -453,7 +465,7 @@ function rotate() {
             newY = +blockCoords[3].split(",")[1] + 1;
             rotatedBlockCoords.push( newX + "," + newY );
         }
-    } else if( currentShape == "left Z" ) {
+    } else if( currentShape == "left-Z" ) {
         if( rotation == 1 || rotation == 3) {
             newX = +blockCoords[0].split(",")[0] + 1;
             newY = +blockCoords[0].split(",")[1] - 1;
@@ -503,14 +515,14 @@ function rotate() {
     }
     newBlockCoords = rotatedBlockCoords;
     console.log( classLanded )
-    block.forEach( pixel => pixel.classList.remove("block") );
-    rotatedBlock.forEach( pixel => pixel.classList.add("block") );
+    block.forEach( pixel => pixel.classList.remove("block", currentShape) );
+    rotatedBlock.forEach( pixel => pixel.classList.add("block", currentShape) );
 
 
 }
 
 window.addEventListener("keydown", (e) => {
-    if( e.key === "w") {
+    if( e.key === "w" || e.key === "ArrowUp" ) {
         // rotate current block...
         rotation = (rotation + 1) % 4;
         rotate();
@@ -539,3 +551,25 @@ window.addEventListener("keyup", (e) => {
         speed = 200;
     }
 })
+
+const button = document.querySelector("button");
+button.addEventListener("click", () => { 
+    fallStep();
+    playSound("Calibre-BelfastGrammar-_If_you_wait.mp3");
+});
+
+function playSound(url) {
+    var a = new Audio(url);
+    a.play();
+}
+async function playAudio() {
+    var audio = new Audio('https://file-examples.com/wp-content/uploads/2017/11/file_example_WAV_1MG.wav');  
+    audio.type = 'audio/wav';
+  
+    try {
+      await audio.play();
+      console.log('Playing...');
+    } catch (err) {
+      console.log('Failed to play...' + error);
+    }
+  }
