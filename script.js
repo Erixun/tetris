@@ -23,7 +23,10 @@ for(let i = 30; i > 0; i--) {
     }
 }
 
-// shape-codes
+// save the default state...
+defaultState = area.innerHTML;
+
+// shape-codes & types
 const shapeCodes = [
     [1,3,5,7],  //straight
     [1,3,4,5],  //left club
@@ -36,18 +39,19 @@ const shapeCodes = [
 const shapes = ["straight","left-club","right-club","protrusion","right-Z","left-Z","cube"]
 
 // select start-area & topline
-const startArea = Array.from( document.querySelectorAll("div.start") )
-const topline = Array.from( document.querySelectorAll(".topline") )
+let startArea = Array.from( document.querySelectorAll("div.start") )
+let topline = Array.from( document.querySelectorAll(".topline") )
+
 // create shape
 let ix;
 let currentShape;
 let rotation;
 function createBlock() {
-    rotation = 0;
+    rotation = 0; //default rotation
     ix = Math.trunc(Math.random()*10 % 7); // random index
-    for( let num of shapeCodes[ ix ] ) { //choose random shape-code
+    //choose random shape-code:
+    for( let num of shapeCodes[ ix ] ) { 
         startArea[num].classList.add("block", shapes[ ix ]);
-     //   startArea[num].classList.add(  );
     }
     currentShape = shapes[ix];
 }
@@ -92,14 +96,17 @@ let block = [];
 let blockCoords;
 let newBlock;
 let newBlockCoords;
-let speed = 200;
-createBlock();
+let speed = 300;
+let currentSpeed = speed;
+
 function fallStep() {
 
     setTimeout( () => {
         // if there's any "landed" pixel in topline it's game over
         if(topline.map( pixel => pixel.classList.contains("landed") ).includes(true) ) {
             alert("Game Over");
+            return;
+        } else if( restart ) { 
             return;
         }
         // get current block
@@ -158,14 +165,7 @@ async function landBlock() {
     fallStep();
 }
 
-
-
-const levels = [];
-for( let i = 1; i<31; i++) {
-    levels.push( Array.from( document.querySelectorAll("[level=\'"+ i +"\']") ) );
-}
-
-
+// check if any level(s) are filled
 let levelsFilled;
 let indices = [];
 function checkLevels() {
@@ -178,20 +178,22 @@ function checkLevels() {
     return indices;
 }
 
-
+// clear any filled level(s)
 async function clearLevels() {
-
+    
     for( let index of indices ) {
         levels[index].forEach( input => input.classList.remove("landed", currentShape) );
         levels[index].forEach( input => input.classList.add("cleared") );
     }
     await sleep(100);
     for( let index of indices ) {
-        levels[index].forEach( input => input.removeAttribute("class") );//.classList.remove("cleared") );
+        levels[index].forEach( input => input.removeAttribute("class") );
     }
 
     levelsCleared = indices
+    currentSpeed -= 20*levelsCleared.length;
 }
+
 let levelsCleared;
 let airBlocks;
 let nrOfBlocks;
@@ -200,9 +202,17 @@ let droppedBlockCoords;
 let dropBlocks;
 let landed;
 let drop;
+topScore = document.querySelector("div#top output")
+topScore.textContent = "0"
+currentScore = document.querySelector("div#current output")
+currentScore.textContent = "0"
 function dropLevels() {
     
     drop = levelsCleared.length;
+    currentScore.textContent = +( (+currentScore.textContent) + drop*100);
+    if( +currentScore.textContent > +topScore.textContent) {
+        topScore.textContent = +( (+topScore.textContent) + drop*100);
+    }
     landed = Array.from( document.querySelectorAll("div.landed") );
 
     for( let div of landed ) {
@@ -238,7 +248,6 @@ function dropLevels() {
         //pixel.classList.remove("airblock")
     });
     let shapesList = airBlocks.map( pixel => pixel.getAttribute("class") );
-    console.log(shapesList); 
     airBlocks.forEach( pixel => {
         pixel.removeAttribute("class");
         //pixel.classList.remove("airblock")
@@ -497,7 +506,6 @@ function rotate() {
         return;
     }
 
-    console.log(rotatedBlockCoords)
 
     rotatedBlock = Array.from( document.querySelectorAll("[xy=\'" + rotatedBlockCoords[0] + "\'],[xy=\'"+rotatedBlockCoords[1]+"\'],[xy=\'"+rotatedBlockCoords[2]+"\'],[xy=\'"+rotatedBlockCoords[3]+"\']") );
     let xCoords = rotatedBlockCoords.map( coord => coord.split(",")[0] );
@@ -508,13 +516,11 @@ function rotate() {
     if( xCoords.includes("0") || xCoords.includes("21") ) { 
         return; // unables rotation into walls
     } else if( classLanded ) { // does to rotated block to be contain any landed pixel? if so, return, don't rotate
-        console.log( classLanded )
         return; // unables rotation into other blocks
     } else if( yCoords.includes("1") ) {
         return;
     }
     newBlockCoords = rotatedBlockCoords;
-    console.log( classLanded )
     block.forEach( pixel => pixel.classList.remove("block", currentShape) );
     rotatedBlock.forEach( pixel => pixel.classList.add("block", currentShape) );
 
@@ -527,11 +533,14 @@ window.addEventListener("keydown", (e) => {
         rotation = (rotation + 1) % 4;
         rotate();
     }
-    console.log(rotation);
+
 })
+
 let xChange;
+quickSpeed = 20;
+superSpeed = 4;
 window.addEventListener("keydown", (e) => {
-    console.log(e.key);
+
     if( e.key === "a" || e.key === "ArrowLeft" ) {
         xChange = -1;
         moveHorizontally();
@@ -539,30 +548,65 @@ window.addEventListener("keydown", (e) => {
         xChange = 1;
         moveHorizontally();
     } else if( e.key === "s" || e.key === "ArrowDown") {
-        speed = 20;
+        speed = quickSpeed;
     } else if ( e.key === " ") {
-        speed = 4;
+        speed = superSpeed;
     };
 })
+
 window.addEventListener("keyup", (e) => {
     if( e.key === "s" || e.key === "ArrowDown") {
-        speed = 200;
+        speed = currentSpeed;
     } else if( e.key === " ") {
-        speed = 200;
+        speed = currentSpeed;
     }
 })
 
 const button = document.querySelector("button");
+let restart = false;
+// create array of levels
+let levels = [];
+
 button.addEventListener("click", () => { 
-    fallStep();
-    playSound("Calibre-BelfastGrammar-_If_you_wait.mp3");
+    if( button.textContent == "Play!") {
+
+        for( let i = 1; i<31; i++) {
+        levels.push( Array.from( document.querySelectorAll("[level=\'"+ i +"\']") ) );
+        }
+        createBlock();
+        button.textContent = "Reset";
+        restart = false;   
+        fallStep();
+        a = playSound("Calibre-BelfastGrammar-_If_you_wait.mp3");
+    } else if( button.textContent == "Reset") {
+
+        currentScore.textContent = "0";
+        stopSound(a);
+        area.innerHTML = defaultState;
+        speed = 250;
+        startArea = Array.from( document.querySelectorAll("div.start") );
+        topline = Array.from( document.querySelectorAll(".topline") );
+        button.textContent = "Play!"
+        restart = true;
+        block = [];
+        levels = [];
+    }
+
 });
 
-function playSound(url) {
-    var a = new Audio(url);
-    a.play();
+let a;
+function playSound(url) { // in use
+        a = new Audio(url);
+        a.play();
+    return a;
 }
-async function playAudio() {
+
+function stopSound(sound) {
+    sound.pause();
+    sound.currentTime = 0;
+}
+
+async function playAudio() { // not in use
     var audio = new Audio('https://file-examples.com/wp-content/uploads/2017/11/file_example_WAV_1MG.wav');  
     audio.type = 'audio/wav';
   
@@ -573,3 +617,4 @@ async function playAudio() {
       console.log('Failed to play...' + error);
     }
   }
+

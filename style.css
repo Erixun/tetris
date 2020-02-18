@@ -20,12 +20,12 @@ div#container {
 }
 
 div#topcover {
-    width: 360px;
+    width: 28%;
     height: 72px;
     position: absolute;
     background-color: #e1edff;
     border-bottom: 1px solid black;
-    /* right: 459.4px; */
+    right: 36%;
     top: 48px;
 }
 h1 {
@@ -80,4 +80,28 @@ div.cleared {
     border: 1px solid white;
     width: 16px !important;
     height: 16px !important;
+}
+
+div#top {
+    position: absolute;
+    top: 48px;
+}
+
+div#current {
+    position: absolute;
+    top: 160px;
+}
+
+div.scorebox {
+    right: 24%;
+    background-color:
+    #e1edff;
+    width: 10%;
+    height: 72px;
+    font-weight:bold;
+}
+
+div.scorebox p {
+    margin-bottom:4px;
+    text-decoration: underline;
 }
