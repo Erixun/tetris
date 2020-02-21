@@ -27,7 +27,7 @@ div#container {
 }
 
 div#topcover {
-    width: 358px;
+    width: 30vw;
     height: 72px;
     background-color: #e1edff;
     border-bottom: 1px solid black;
@@ -41,8 +41,8 @@ h1 {
 div.block {
     background-color:grey;
     border: 1px solid;
-    width: 16px !important;
-    height: 16px !important;
+    width: 1.345vw !important;
+    height: 1.345vw !important;
 }
 div.straight {
     background-color: orange;
@@ -73,11 +73,10 @@ div.cube {
     border-color: lightblue blue blue lightblue;
 }
 div.landed {
-    /* background-color:grey; */
     border: 1px solid;
     border-color: lightblue blue blue lightblue;
-    width: 16px !important;
-    height: 16px !important;
+    width: 1.345vw !important;
+    height: 1.345vw !important;
 }
 div.cleared {
     transition: 0.1s;
@@ -98,7 +97,7 @@ div#current {
 }
 
 div.scorebox {
-    right: 24%;
+    right: 23%;
     background-color:
     #e1edff;
     width: 10%;

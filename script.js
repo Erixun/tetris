@@ -10,8 +10,8 @@ for(let i = 30; i > 0; i--) {
         div.setAttribute("xy", j+","+i);
         div.setAttribute("x", +j);
         div.setAttribute("y", +i);
-        div.style.width = "18px";
-        div.style.height = "18px";
+        div.style.width = "1.5vw";
+        div.style.height = "1.5vw";
         // set creation-site-div's
         if( (j==10 || j==11) && i > 26 ) {
             div.classList.add("start");
