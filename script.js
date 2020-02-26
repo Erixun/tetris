@@ -156,6 +156,7 @@ async function landBlock() {
     checkLevels(); // any level filled? if so, clear it, then drop the blocks above
     if( indices.length > 0) { 
         clearLevels(); 
+        playSound('TETRISLevel.mp3')
         await sleep(120);
         dropLevels(); 
     };
