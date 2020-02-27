@@ -278,6 +278,7 @@ function rotate() {
     let newX;
     let newY;
     rotatedBlockCoords = []; // get current shape
+    playSound('TETRISrotera.mp3');
     if( currentShape == "straight" ) {
         for( let i = 0; i < 4; i++ ) {
             newX = +blockCoords[i].split(",")[0] - (i-1);
