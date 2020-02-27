@@ -555,6 +555,7 @@ window.addEventListener("keydown", (e) => {
         speed = superSpeed;
     };
 })
+// Instant fall function...
 
 window.addEventListener("keyup", (e) => {
     if( e.key === "s" || e.key === "ArrowDown") {
