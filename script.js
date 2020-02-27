@@ -47,6 +47,7 @@ let ix;
 let currentShape;
 let rotation;
 function createBlock() {
+    blockNearWall = false;
     rotation = 0; //default rotation
     ix = Math.trunc(Math.random()*10 % 7); // random index
     //choose random shape-code:
@@ -264,9 +265,14 @@ function dropLevels() {
     });
 }
 let classLanded;
+let blockNearWall;
 function rotate() {
     // get current block
     block = Array.from( document.querySelectorAll("div.block") );
+    const blockInStartArea = block.reduce( (total,pixel) => total || pixel.classList.contains('topline'), false )
+    if(blockInStartArea) {   
+        return;
+    };
 
     // get current block-coords. or the whole "sphere" ?
     blockCoords = [];
@@ -516,12 +522,14 @@ function rotate() {
         return (total || div.classList.contains("landed") ) ;
     }, false)
     if( xCoords.includes("0") || xCoords.includes("21") ) { 
+        blockNearWall = true;
         return; // unables rotation into walls
-    } else if( classLanded ) { // does to rotated block to be contain any landed pixel? if so, return, don't rotate
+    } else if( classLanded ) { // does t rotated block to be contain any landed pixel? if so, return, don't rotate
         return; // unables rotation into other blocks
     } else if( yCoords.includes("1") ) {
         return;
     }
+    blockNearWall = false;
     newBlockCoords = rotatedBlockCoords;
     block.forEach( pixel => pixel.classList.remove("block", currentShape) );
     rotatedBlock.forEach( pixel => pixel.classList.add("block", currentShape) );
@@ -532,6 +540,12 @@ function rotate() {
 window.addEventListener("keydown", (e) => {
     if( e.key === "w" || e.key === "ArrowUp" ) {
         // rotate current block...
+        if(block.reduce( (total,pixel) => total || pixel.classList.contains('topline'), false ) ) { 
+            return; 
+        } else if( blockNearWall ) {
+            rotate();
+            return;
+        }
         rotation = (rotation + 1) % 4;
         rotate();
     }
